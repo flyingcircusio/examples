@@ -1,0 +1,4 @@
+{
+  "body": "Shakespeare wrote many, many sonnets",
+  "access": ["admins", "users", "guests"]
+}

@@ -1,0 +1,4 @@
+{
+  "body": "During the winter it can be very cold - even if its sunny.",
+  "access": ["admins", "users", "guests"]
+}

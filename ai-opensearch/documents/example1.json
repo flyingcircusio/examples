@@ -1,0 +1,4 @@
+{
+  "body": "Green cars are faster than blue cars.",
+  "access": ["admins", "users", "guests"]
+}

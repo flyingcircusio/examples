@@ -1,0 +1,4 @@
+{
+  "body": "On sunny days PV can produce a lot of green energy",
+  "access": ["admins", "users", "guests"]
+}
