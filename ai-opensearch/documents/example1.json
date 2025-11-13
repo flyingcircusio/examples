@@ -1,4 +1,4 @@
 {
-  "body": "Green cars are faster than blue cars.",
+  "body": "The query text from which to generate vector embeddings. You must specify at least one query_text or query_image.",
   "access": ["admins", "users", "guests"]
 }

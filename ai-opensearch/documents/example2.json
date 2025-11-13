@@ -1,4 +1,4 @@
 {
-  "body": "Schools are normally for humans, not animals",
-  "access": ["admins"]
+  "body": "A base-64 encoded string that corresponds to the query image from which to generate vector embeddings. You must specify at least one query_text or query_image.",
+  "access": ["admins", "guests"]
 }

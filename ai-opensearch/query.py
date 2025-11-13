@@ -4,17 +4,21 @@
 # ]
 # ///
 #
+import json
 import os
-import pprint
 import sys
 
 from opensearchpy import OpenSearch
+
+with open("config.json") as f:
+    config = json.load(f)
+
 
 AI_KEY = os.environ["FCIO_AI_ACCESS_KEY"]
 OPENSEARCH_HOST = "127.0.0.1"
 OPENSEARCH_PORT = 9200
 INDEX_NAME = "documents"
-MODEL_ID = "sgoeKpoBIQvP5Ft2CIz3"  # as output by prepare-index
+MODEL_ID = config["opensearch"]["model_id"]
 
 client = OpenSearch(
     hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
@@ -32,25 +36,18 @@ results = client.search(
         "size": 5,
         "_source": {"excludes": ["passage_embedding"]},
         "query": {
-            "bool": {
-                "filter": [
-                    {"term": {"access": ACCESS}},
-                ],
-                "must": [
-                    {
-                        "neural": {
-                            "passage_embedding": {
-                                "query_text": QUERY_TEXT,
-                                "model_id": MODEL_ID,
-                                "k": 2,
-                            }
-                        }
-                    },
-                ],
+            "neural": {
+                "passage_embedding": {
+                    "query_text": QUERY_TEXT,
+                    "model_id": MODEL_ID,
+                    "min_score": 0.7,
+                    "filter": {"term": {"access": ACCESS}},
+                }
             }
         },
     },
 )
 
 
-pprint.pprint(results)
+for hit in results["hits"]["hits"]:
+    print(f"{hit['_score']} {hit['_source']['body']}")

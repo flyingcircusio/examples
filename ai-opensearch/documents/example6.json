@@ -1,4 +1,4 @@
 {
-  "body": "On sunny days PV can produce a lot of green energy",
+  "body": "The maximum distance threshold for the search results. Only one variable, either k, min_score, or max_distance, can be specified. For more information, see Radial search.",
   "access": ["admins", "users", "guests"]
 }

@@ -1,4 +1,4 @@
 {
-  "body": "Cars that are fast use a lot of energy",
-  "access": ["admins", "users", "guests"]
+  "body": "The ID of the model that will be used to generate vector embeddings from the query text. The model must be deployed in OpenSearch before it can be used in neural search. For more information, see Using custom models within OpenSearch and Neural search. Cannot be provided together with the semantic_field_search_analyzer.",
+  "access": ["admins", "users"]
 }

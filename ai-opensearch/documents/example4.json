@@ -1,4 +1,4 @@
 {
-  "body": "Electric cars go brrrrr",
+  "body": "The number of results returned by the k-NN search. Only one variable, either k, min_score, or max_distance, can be specified. If a variable is not specified, the default is k with a value of 10.",
   "access": ["admins", "users"]
 }

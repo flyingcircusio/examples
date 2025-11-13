@@ -4,15 +4,21 @@
 # ]
 # ///
 
+import json
 import os
 import time
 
 from opensearchpy import OpenSearch
 
+with open("config.json") as f:
+    config = json.load(f)
+
 AI_KEY = os.environ["FCIO_AI_ACCESS_KEY"]
+AI_ENDPOINT = "ai.whq.fcio.net"
 OPENSEARCH_HOST = "127.0.0.1"
 OPENSEARCH_PORT = 9200
 INDEX_NAME = "documents"
+
 
 os = OpenSearch(
     hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
@@ -29,19 +35,21 @@ POST_PROCESS = """
     return json;
 """
 
+print("Configuring cluster ...")
 os.cluster.put_settings(
     body={
         "persistent": {
             "plugins.ml_commons.only_run_on_ml_node": "false",
             "plugins.ml_commons.native_memory_threshold": "99",
             "plugins.ml_commons.trusted_connector_endpoints_regex": [
-                "^https://ai\\.rzob\\.fcio\\.net/.*$",
+                "^https://ai\\.whq\\.fcio\\.net/.*$",
             ],
         }
     }
 )
 
 # Model Group
+print("Registering Model Group")
 response = os.plugins.ml.register_model_group(
     body={
         "name": "remote_fc_ai",
@@ -58,7 +66,7 @@ response = os.plugins.ml.create_connector(
         "version": 1,
         "protocol": "http",
         "parameters": {
-            "endpoint": "ai.rzob.fcio.net",
+            "endpoint": AI_ENDPOINT,
             "model": "embeddinggemma:300m",
         },
         "credential": {
@@ -101,7 +109,7 @@ while True:
         break
     time.sleep(1)
 model_id = response["model_id"]
-print("Model id:", model_id)
+config["opensearch"]["model_id"] = model_id
 
 response = os.ingest.put_pipeline(
     id="document-ingest",
@@ -109,11 +117,18 @@ response = os.ingest.put_pipeline(
         "description": "Pipeline to ingest documents",
         "processors": [
             {
+                "set": {
+                    "description": "Create a new field with the Gemma prompt format",
+                    "field": "gemma_prompt",
+                    "value": "task: sentence similarity | query: {{{body}}}",
+                }
+            },
+            {
                 "text_embedding": {
                     "model_id": model_id,
-                    "field_map": {"body": "passage_embedding"},
+                    "field_map": {"gemma_prompt": "passage_embedding"},
                 }
-            }
+            },
         ],
     },
 )
@@ -133,7 +148,7 @@ response = os.indices.create(
                 "passage_embedding": {
                     "type": "knn_vector",
                     "dimension": 768,  # Must match the ML output vector
-                    "space_type": "l2",
+                    "space_type": "cosinesimil",
                 },
                 "body": {"type": "text"},
                 "access": {"type": "keyword"},
@@ -142,4 +157,8 @@ response = os.indices.create(
         },
     },
 )
+
 print(response)
+
+with open("config.json", "w") as f:
+    json.dump(config, f)

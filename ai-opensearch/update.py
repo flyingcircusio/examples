@@ -24,10 +24,13 @@ client = OpenSearch(
 for f in Path("documents").glob("*.json"):
     print(f.stem)
     document = json.load(f.open())
-    del document["body"]
+    # del document[
+    #     "body"
+    # ]  # do not trigger running the expensive vector embeddings again
     response = client.update(
         index=INDEX_NAME,
-        body=document,
+        body={"doc": document},
         id=f.stem,
         refresh=True,
+        timeout=60,
     )
