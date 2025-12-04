@@ -1,0 +1,12 @@
+[project]
+name = "ai-qdrant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastembed>=0.7.3",
+    "llama-index>=0.14.9",
+    "openai>=2.8.1",
+    "qdrant-client>=1.16.1",
+]
